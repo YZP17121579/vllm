@@ -217,12 +217,13 @@ class CpuGpuBlockAllocator(DeviceAwareBlockAllocator):
                 # Allocate and free, to update block state in CPU evictor.
                 dual_block = dual_allocator.allocate_immutable_block(
                     block.prev_block, block.token_ids)
+                dual_block_id = dual_block.block_id
+                assert dual_block_id is not None
                 dual_allocator.mark_blocks_as_accessed(
-                    [dual_block.block_id], last_access_time)
+                    [dual_block_id], last_access_time)
                 # If block not exists in CPU allocator, swap is needed.
                 if need_swap:
-                    self._swap_mapping_gpu_to_cpu[block.block_id] = \
-                        dual_block.block_id
+                    self._swap_mapping_gpu_to_cpu[block_id] = dual_block_id
                 dual_allocator.free(dual_block)
         allocator.free(block)
 
